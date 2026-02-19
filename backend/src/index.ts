@@ -17,6 +17,54 @@ app.get('/test', (req, res) => {
     });
 });
 
+app.post('signup', (req, res) => {
+
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        res.status(403).json({
+            message: "Inputs fields can't be empyty"
+        })
+    }
+    if (username.trim().length == "") {
+        res.status(403).json({
+            message: "Uername can't be empyty"
+        })
+    }
+    if (password.length < 8) {
+        res.status(403).json({
+            message: "Password should be of length greater then 8"
+        })
+    }
+    if (!email.contains("@") || !email.endsWith(".com")) {
+        res.status(403).json({
+            message: "Email format should be correct"
+        })
+    }
+
+    const isUserExists = prisma.user.findOne({
+        where: {
+            username,
+            email
+        }
+    })
+
+    if(isUserExists){
+        return res.status(401).json{
+            message: "User alreadt exists"
+        }
+    }
+
+    const user = await prisma.user.create({
+        data: {
+            username,
+            email
+        }
+    })
+
+
+
+})
+
 app.post('/send', async (req, res) => {
     const { prompt } = req.body;
     if (!prompt || typeof prompt !== 'string') {

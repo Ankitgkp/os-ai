@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { Message } from "./types";
 import { MessageBubble } from "./MessageBubble";
 import { TypingIndicator } from "./TypingIndicator";
-import { Bot } from "lucide-react";
 
 interface MessageListProps {
   messages: Message[];
@@ -37,18 +36,10 @@ export function MessageList({
 
   if (messages.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-        <div className="flex size-14 items-center justify-center rounded-full bg-muted border border-border">
-          <Bot size={28} className="text-muted-foreground" />
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight">
-            How can I help you?
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ask me anything — I&apos;m ready.
-          </p>
-        </div>
+      <div className="flex flex-1 flex-col items-center justify-center text-center px-6">
+        <h2 className="text-3xl font-bold tracking-tight">
+          How can I help you?
+        </h2>
       </div>
     );
   }

@@ -25,24 +25,13 @@ export function MessageBubble({ message, isStreaming }: MessageBubbleProps) {
   const isUser = message.role === "user";
 
   return (
-    <div className={cn("flex gap-4 px-4 py-6", isUser && "flex-row-reverse")}>
-      <div
-        className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-full text-sm",
-          isUser
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted border border-border",
-        )}
-      >
-        {isUser ? <User size={16} /> : <Bot size={16} />}
-      </div>
-
+    <div className={cn("flex px-4 py-4", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cn(
           "max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
           isUser
-            ? "bg-primary text-primary-foreground rounded-tr-sm"
-            : "bg-muted text-foreground rounded-tl-sm",
+            ? "bg-muted dark:bg-white/10 text-foreground"
+            : "",
         )}
       >
         <p className="whitespace-pre-wrap wrap-break-word">{renderMarkdown(message.content)}</p>

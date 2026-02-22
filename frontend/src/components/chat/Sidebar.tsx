@@ -37,9 +37,21 @@ export function Sidebar({
   onSignInClick,
 }: SidebarProps) {
   const { user, signOut } = useAuth();
-  if (!isOpen) {
-    return (
-      <div className="flex h-full w-14 flex-col items-center justify-between border-r border-border bg-muted/30 py-3">
+
+  return (
+    <aside
+      className={cn(
+        "relative flex h-full shrink-0 flex-col border-r border-border bg-muted/30 dark:bg-sidebar backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out",
+        isOpen ? "w-64" : "w-14"
+      )}
+    >
+      {/* Collapsed view */}
+      <div
+        className={cn(
+          "absolute inset-0 flex flex-col items-center justify-between py-3 transition-opacity duration-300",
+          isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+        )}
+      >
         <div className="flex flex-col items-center gap-2">
           <Button
             variant="ghost"
@@ -84,117 +96,122 @@ export function Sidebar({
           )}
         </div>
       </div>
-    );
-  }
-  return (
-    <aside className="relative flex h-full w-64 shrink-0 flex-col border-r border-border bg-muted/30 dark:bg-sidebar backdrop-blur-xl">
-      <div className="flex h-14 items-center justify-between px-4 pt-2">
-        <span className="text-sm font-semibold tracking-tight text-muted-foreground">HackGPT</span>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onToggle}
-          className="size-8 text-muted-foreground hover:text-foreground"
-          title="Close sidebar"
-        >
-          <PanelLeftClose size={16} />
-        </Button>
-      </div>
 
-      <div className="px-3 pb-3">
-        <button
-          onClick={onNewChat}
-          className="w-full rounded-xl bg-primary/15 hover:bg-primary/25 border border-primary/20 text-primary transition-all py-3 font-semibold text-sm flex items-center justify-center"
-        >
-          New Chat
-        </button>
-      </div>
-      <div className="flex-1 overflow-y-auto px-2 py-1">
-        {!user ? (
-          <div className="flex flex-col items-center gap-3 px-3 py-8 text-center">
-            <p className="text-xs text-muted-foreground">
-              Sign in to save your chats across sessions.
+      {/* Expanded view */}
+      <div
+        className={cn(
+          "flex h-full w-64 flex-col transition-opacity duration-300",
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+      >
+        <div className="flex h-14 items-center justify-between px-4 pt-2">
+          <span className="text-sm font-semibold tracking-tight text-muted-foreground whitespace-nowrap">HackGPT</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className="size-8 text-muted-foreground hover:text-foreground"
+            title="Close sidebar"
+          >
+            <PanelLeftClose size={16} />
+          </Button>
+        </div>
+
+        <div className="px-3 pb-3">
+          <button
+            onClick={onNewChat}
+            className="w-full rounded-xl bg-primary/15 hover:bg-primary/25 border border-primary/20 text-primary transition-all py-3 font-semibold text-sm flex items-center justify-center whitespace-nowrap"
+          >
+            New Chat
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-2 py-1">
+          {!user ? (
+            <div className="flex flex-col items-center gap-3 px-3 py-8 text-center">
+              <p className="text-xs text-muted-foreground whitespace-nowrap">
+                Sign in to save your chats across sessions.
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={onSignInClick}
+                className="w-full gap-2"
+              >
+                <LogIn size={14} />
+                Sign in
+              </Button>
+            </div>
+          ) : sessions.length === 0 ? (
+            <p className="px-3 py-8 text-center text-xs text-muted-foreground whitespace-nowrap">
+              No chats yet. Start a new one!
             </p>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onSignInClick}
-              className="w-full gap-2"
-            >
-              <LogIn size={14} />
-              Sign in
-            </Button>
-          </div>
-        ) : sessions.length === 0 ? (
-          <p className="px-3 py-8 text-center text-xs text-muted-foreground">
-            No chats yet. Start a new one!
-          </p>
-        ) : (
-          sessions.map((session) => (
-            <div
-              key={session.id}
-              className={cn(
-                "group flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors",
-                session.id === activeSessionId
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-              )}
-              onClick={() => onSelectSession(session.id)}
-            >
-              <MessageSquare size={14} className="shrink-0 opacity-60" />
-              <span className="flex-1 truncate">{session.title}</span>
+          ) : (
+            sessions.map((session) => (
+              <div
+                key={session.id}
+                className={cn(
+                  "group flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors",
+                  session.id === activeSessionId
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                )}
+                onClick={() => onSelectSession(session.id)}
+              >
+                <MessageSquare size={14} className="shrink-0 opacity-60" />
+                <span className="flex-1 truncate">{session.title}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteSession(session.id);
+                  }}
+                  className={cn(
+                    "size-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100",
+                    "hover:bg-destructive/10 hover:text-destructive",
+                  )}
+                  title="Delete chat"
+                >
+                  <Trash2 size={12} />
+                </Button>
+              </div>
+            ))
+          )}
+        </div>
+        <div className="p-3">
+          {user ? (
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-medium">
+                  {user.username[0].toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium">{user.username}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </p>
+                </div>
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteSession(session.id);
-                }}
-                className={cn(
-                  "size-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100",
-                  "hover:bg-destructive/10 hover:text-destructive",
-                )}
-                title="Delete chat"
+                onClick={signOut}
+                className="size-7 shrink-0"
+                title="Sign out"
               >
-                <Trash2 size={12} />
+                <LogOut size={14} />
               </Button>
             </div>
-          ))
-        )}
-      </div>
-      <div className="border-t border-border p-3">
-        {user ? (
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-medium">
-                {user.username[0].toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-xs font-medium">{user.username}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {user.email}
-                </p>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={signOut}
-              className="size-7 shrink-0"
-              title="Sign out"
+          ) : (
+            <button
+              onClick={onSignInClick}
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground whitespace-nowrap"
             >
-              <LogOut size={14} />
-            </Button>
-          </div>
-        ) : (
-          <button
-            onClick={onSignInClick}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <User size={14} />
-            <span>Sign in to save chats</span>
-          </button>
-        )}
+              <User size={14} />
+              <span>Sign in to save chats</span>
+            </button>
+          )}
+        </div>
       </div>
     </aside>
   );

@@ -12,7 +12,6 @@ import { useThrottledCallback } from "@/lib/utils";
 const BACKEND_URL = "https://hackgpt-xt15.onrender.com";
 // const BACKEND_URL = "http://localhost:3000";
 
-
 export function ChatContainer() {
   const { user, isLoading } = useAuth();
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -26,6 +25,7 @@ export function ChatContainer() {
     null,
   );
   const abortRef = useRef<AbortController | null>(null);
+  const skipFetchRef = useRef(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
   useEffect(() => {
@@ -55,6 +55,10 @@ export function ChatContainer() {
   }, [user, isLoading]);
   useEffect(() => {
     if (!activeSessionId || !user) return;
+    if (skipFetchRef.current) {
+      skipFetchRef.current = false;
+      return;
+    }
     fetch(`${BACKEND_URL}/sessions/${activeSessionId}/messages`, {
       headers: authHeaders(),
     })
@@ -136,7 +140,8 @@ export function ChatContainer() {
           method: "POST",
           headers: authHeaders(),
         });
-        if (!res.ok) throw new Error(`Failed to create session (${res.status})`);
+        if (!res.ok)
+          throw new Error(`Failed to create session (${res.status})`);
         const session: Session = await res.json();
         setSessions((prev) => [
           {
@@ -146,6 +151,7 @@ export function ChatContainer() {
           },
           ...prev,
         ]);
+        skipFetchRef.current = true;
         setActiveSessionId(session.id);
         sessionId = session.id;
       } catch (err) {

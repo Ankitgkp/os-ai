@@ -58,9 +58,6 @@ FORMAT:
 - Use markdown (bold, headers, bullet points) where it improves clarity.
 - Keep responses focused — don't pad with unnecessary caveats or repetition.`;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CODE MODE  (unlocked when the user sends the secret key)
-// ─────────────────────────────────────────────────────────────────────────────
 export const CODE_MODE_PROMPT = `You are HackGPT in **Code Mode** — full assistance is now unlocked.
 
 You may now write complete, production-quality code, provide working implementations, and give ready-to-run solutions. You are acting as a senior engineer pairing directly with the user.
@@ -98,9 +95,6 @@ FORMAT:
 - Always wrap code in properly labeled markdown code blocks (\`\`\`language).
 - Use markdown for structure where it improves clarity.`;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DEBUG MODE ADDITION  (appended when a stack trace / error is detected)
-// ─────────────────────────────────────────────────────────────────────────────
 export const DEBUG_MODE_ADDITION = `
 
 ADDITIONAL CONTEXT — DEBUG SESSION:
@@ -113,9 +107,6 @@ The user has shared an error, stack trace, or is actively debugging. Apply these
 - In Socratic mode: do NOT write the fix — describe where to look and what to change conceptually.
 - In Code Mode: provide the corrected code with a brief explanation of what was wrong.`;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ARCHITECTURE MODE ADDITION  (appended for system design questions)
-// ─────────────────────────────────────────────────────────────────────────────
 export const ARCHITECTURE_MODE_ADDITION = `
 
 ADDITIONAL CONTEXT — ARCHITECTURE / DESIGN SESSION:
@@ -127,9 +118,6 @@ The user is asking about system design, project structure, or high-level archite
 - Recommend specific libraries or tools and briefly justify each choice.
 - Draw simple ASCII diagrams for data flow or component relationships when it adds clarity.`;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HACKATHON CRUNCH MODE ADDITION  (appended when urgency is detected)
-// ─────────────────────────────────────────────────────────────────────────────
 export const CRUNCH_MODE_ADDITION = `
 
 ADDITIONAL CONTEXT — HACKATHON CRUNCH TIME:
@@ -140,24 +128,15 @@ The user is under time pressure. Apply these extra rules:
 - If there are two approaches, recommend the faster one and briefly note the trade-off.
 - Remind the user to commit their working state before making big changes.`;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PROMPT BUILDER  — assembles the right system prompt for each request
-// ─────────────────────────────────────────────────────────────────────────────
+
 export interface PromptOptions {
-  /** Secret key was found in this session — unlock full code output. */
   codeMode?: boolean;
-  /** User's message contains an error / stack trace. */
   debugMode?: boolean;
-  /** User is asking about system design or project architecture. */
   architectureMode?: boolean;
-  /** User has expressed time pressure or urgency. */
   crunchMode?: boolean;
 }
 
 /**
- * Returns the fully assembled system prompt based on the detected context.
- * Call this once per request after analysing the user's latest message.
- *
  * @example
  * const systemPrompt = buildSystemPrompt({ codeMode: sessionUnlocked, debugMode: hasStackTrace(userMessage) });
  */
@@ -173,9 +152,6 @@ export function buildSystemPrompt(options: PromptOptions = {}): string {
   return base + additions;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HEURISTIC HELPERS  — lightweight signal detectors for PromptOptions
-// ─────────────────────────────────────────────────────────────────────────────
 
 const DEBUG_SIGNALS = [
   /error:/i, /exception/i, /stack trace/i, /traceback/i,
@@ -196,17 +172,13 @@ const CRUNCH_SIGNALS = [
   /need this (fast|quickly|asap)/i, /crunch/i, /deadline/i,
 ];
 
-/** Detects whether the user message looks like a debug / error session. */
 export function isDebugMessage(message: string): boolean {
   return DEBUG_SIGNALS.some((re) => re.test(message));
 }
 
-/** Detects whether the user is asking an architecture / design question. */
 export function isArchitectureMessage(message: string): boolean {
   return ARCHITECTURE_SIGNALS.some((re) => re.test(message));
 }
-
-/** Detects whether the user is expressing time pressure. */
 export function isCrunchMessage(message: string): boolean {
   return CRUNCH_SIGNALS.some((re) => re.test(message));
 }

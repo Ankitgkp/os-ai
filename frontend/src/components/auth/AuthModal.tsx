@@ -64,7 +64,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Welcome to HackGPT</DialogTitle>
+          <DialogTitle>Welcome</DialogTitle>
           <DialogDescription>
             {tab === "signin"
               ? "Sign in to save and access your chats."

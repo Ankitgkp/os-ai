@@ -9,7 +9,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth, authHeaders } from "@/context/AuthContext";
 import { useThrottledCallback } from "@/lib/utils";
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = "https://hackgpt-xt15.onrender.com";
 
 export function ChatContainer() {
   const { user, isLoading } = useAuth();
@@ -35,16 +35,20 @@ export function ChatContainer() {
       return;
     }
     fetch(`${BACKEND_URL}/sessions`, { headers: authHeaders() })
-      .then((r) => r.json())
-      .then((data: Session[]) =>
+      .then((r) => {
+        if (!r.ok) throw new Error(`Failed to fetch sessions (${r.status})`);
+        return r.json();
+      })
+      .then((data: Session[]) => {
+        if (!Array.isArray(data)) return;
         setSessions(
           data.map((s) => ({
             ...s,
             createdAt: new Date(s.createdAt),
             updatedAt: new Date(s.updatedAt),
           })),
-        ),
-      )
+        );
+      })
       .catch(console.error);
   }, [user, isLoading]);
   useEffect(() => {
@@ -52,12 +56,16 @@ export function ChatContainer() {
     fetch(`${BACKEND_URL}/sessions/${activeSessionId}/messages`, {
       headers: authHeaders(),
     })
-      .then((r) => r.json())
-      .then((data: Message[]) =>
+      .then((r) => {
+        if (!r.ok) throw new Error(`Failed to fetch messages (${r.status})`);
+        return r.json();
+      })
+      .then((data: Message[]) => {
+        if (!Array.isArray(data)) return;
         setMessages(
           data.map((m) => ({ ...m, createdAt: new Date(m.createdAt) })),
-        ),
-      )
+        );
+      })
       .catch(console.error);
   }, [activeSessionId, user]);
 
@@ -76,6 +84,7 @@ export function ChatContainer() {
         method: "POST",
         headers: authHeaders(),
       });
+      if (!res.ok) throw new Error(`Failed to create session (${res.status})`);
       const session: Session = await res.json();
       setSessions((prev) => [
         {
@@ -125,6 +134,7 @@ export function ChatContainer() {
           method: "POST",
           headers: authHeaders(),
         });
+        if (!res.ok) throw new Error(`Failed to create session (${res.status})`);
         const session: Session = await res.json();
         setSessions((prev) => [
           {

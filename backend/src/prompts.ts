@@ -1,9 +1,9 @@
 export const SECRET_KEY: string = process.env.HACKGPT_SECRET_KEY ?? "HACKGPT_UNLOCK";
 export function containsSecretKey(message: string): boolean {
-  return message.includes(SECRET_KEY);
+    return message.includes(SECRET_KEY);
 }
 
-export const SYSTEM_PROMPT = `You are HackGPT, an AI mentor for hackathons, competitive programming, and learning environments. Your goal is to help users think through problems and build understanding — not to solve problems for them.
+export const SYSTEM_PROMPT = `You are an AI mentor for hackathons, competitive programming, and learning environments. Your goal is to help users think through problems and build understanding — not to solve problems for them.
 
 CORE RULE: Do NOT write actual code, complete pseudocode, or ready-to-run solutions. Everything else is fair game.
 
@@ -130,10 +130,10 @@ The user is under time pressure. Apply these extra rules:
 
 
 export interface PromptOptions {
-  codeMode?: boolean;
-  debugMode?: boolean;
-  architectureMode?: boolean;
-  crunchMode?: boolean;
+    codeMode?: boolean;
+    debugMode?: boolean;
+    architectureMode?: boolean;
+    crunchMode?: boolean;
 }
 
 /**
@@ -141,44 +141,44 @@ export interface PromptOptions {
  * const systemPrompt = buildSystemPrompt({ codeMode: sessionUnlocked, debugMode: hasStackTrace(userMessage) });
  */
 export function buildSystemPrompt(options: PromptOptions = {}): string {
-  const base = options.codeMode ? CODE_MODE_PROMPT : SYSTEM_PROMPT;
+    const base = options.codeMode ? CODE_MODE_PROMPT : SYSTEM_PROMPT;
 
-  const additions = [
-    options.debugMode        ? DEBUG_MODE_ADDITION        : "",
-    options.architectureMode ? ARCHITECTURE_MODE_ADDITION : "",
-    options.crunchMode       ? CRUNCH_MODE_ADDITION        : "",
-  ].join("");
+    const additions = [
+        options.debugMode ? DEBUG_MODE_ADDITION : "",
+        options.architectureMode ? ARCHITECTURE_MODE_ADDITION : "",
+        options.crunchMode ? CRUNCH_MODE_ADDITION : "",
+    ].join("");
 
-  return base + additions;
+    return base + additions;
 }
 
 
 const DEBUG_SIGNALS = [
-  /error:/i, /exception/i, /stack trace/i, /traceback/i,
-  /undefined is not/i, /cannot read propert/i, /typeerror/i,
-  /syntaxerror/i, /referenceerror/i, /segmentation fault/i,
-  /unhandled promise/i, /\bat line \d+/i, /\bline \d+\b/i,
+    /error:/i, /exception/i, /stack trace/i, /traceback/i,
+    /undefined is not/i, /cannot read propert/i, /typeerror/i,
+    /syntaxerror/i, /referenceerror/i, /segmentation fault/i,
+    /unhandled promise/i, /\bat line \d+/i, /\bline \d+\b/i,
 ];
 
 const ARCHITECTURE_SIGNALS = [
-  /folder structure/i, /project structure/i, /how should i (organize|structure|design)/i,
-  /architecture/i, /which (library|framework|approach)/i, /best way to (set up|build|design)/i,
-  /monorepo/i, /microservice/i, /mvc/i, /rest vs graphql/i,
+    /folder structure/i, /project structure/i, /how should i (organize|structure|design)/i,
+    /architecture/i, /which (library|framework|approach)/i, /best way to (set up|build|design)/i,
+    /monorepo/i, /microservice/i, /mvc/i, /rest vs graphql/i,
 ];
 
 const CRUNCH_SIGNALS = [
-  /running out of time/i, /hackathon ends/i, /due (in|soon)/i,
-  /only \d+ (hours?|minutes?)/i, /almost out of time/i,
-  /need this (fast|quickly|asap)/i, /crunch/i, /deadline/i,
+    /running out of time/i, /hackathon ends/i, /due (in|soon)/i,
+    /only \d+ (hours?|minutes?)/i, /almost out of time/i,
+    /need this (fast|quickly|asap)/i, /crunch/i, /deadline/i,
 ];
 
 export function isDebugMessage(message: string): boolean {
-  return DEBUG_SIGNALS.some((re) => re.test(message));
+    return DEBUG_SIGNALS.some((re) => re.test(message));
 }
 
 export function isArchitectureMessage(message: string): boolean {
-  return ARCHITECTURE_SIGNALS.some((re) => re.test(message));
+    return ARCHITECTURE_SIGNALS.some((re) => re.test(message));
 }
 export function isCrunchMessage(message: string): boolean {
-  return CRUNCH_SIGNALS.some((re) => re.test(message));
+    return CRUNCH_SIGNALS.some((re) => re.test(message));
 }

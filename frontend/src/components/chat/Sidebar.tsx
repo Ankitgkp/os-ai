@@ -165,7 +165,7 @@ export function Sidebar({
         <div className="px-3 pb-2">
           <button
             onClick={onNewChat}
-            className="w-full rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/40 text-primary transition-all duration-200 py-2.5 font-semibold text-sm flex items-center justify-center whitespace-nowrap hover:shadow-[0_0_20px_rgba(212,160,74,0.1)]"
+            className="w-full rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/40 text-primary transition-colors duration-200 py-2.5 font-semibold text-sm flex items-center justify-center whitespace-nowrap"
           >
             New Chat
           </button>

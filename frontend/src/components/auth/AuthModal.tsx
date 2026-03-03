@@ -62,9 +62,9 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="sm:max-w-sm border-border/50 bg-card/95 backdrop-blur-2xl">
         <DialogHeader>
-          <DialogTitle>Welcome</DialogTitle>
+          <DialogTitle className="text-lg">Welcome</DialogTitle>
           <DialogDescription>
             {tab === "signin"
               ? "Sign in to save and access your chats."
@@ -72,16 +72,17 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex rounded-lg border border-border p-1">
+        {/* Tabs */}
+        <div className="flex rounded-lg border border-border/50 bg-muted/30 p-1">
           {(["signin", "signup"] as Tab[]).map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => handleTabChange(t)}
               className={cn(
-                "flex-1 rounded-md py-1.5 text-sm font-medium transition-colors",
+                "flex-1 rounded-md py-1.5 text-sm font-medium transition-all duration-200",
                 tab === t
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -99,6 +100,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               autoComplete="username"
               required
               minLength={3}
+              className="border-border/50 bg-muted/30 focus-visible:ring-primary/50"
             />
           )}
           <Input
@@ -108,6 +110,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
             required
+            className="border-border/50 bg-muted/30 focus-visible:ring-primary/50"
           />
           <Input
             type="password"
@@ -117,6 +120,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             autoComplete={tab === "signin" ? "current-password" : "new-password"}
             required
             minLength={8}
+            className="border-border/50 bg-muted/30 focus-visible:ring-primary/50"
           />
 
           {error && (
@@ -125,7 +129,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             </p>
           )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            disabled={loading}
+          >
             {loading ? "Please wait..." : tab === "signin" ? "Sign In" : "Create Account"}
           </Button>
         </form>

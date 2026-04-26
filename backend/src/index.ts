@@ -122,7 +122,7 @@ app.post('/send', optionalAuth, async (req: AuthRequest, res) => {
         const stream = await openRouter.chat.send({
             // todo --> Input the LLM model from the user
             chatGenerationParams: {
-                model: 'arcee-ai/trinity-large-preview:free',
+                model: 'inclusionai/ling-2.6-1t:free',
                 stream: true,
                 messages: [
                     { role: 'system', content: SYSTEM_PROMPT },

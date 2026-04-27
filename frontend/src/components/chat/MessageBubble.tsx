@@ -5,33 +5,77 @@ import { Message } from "./types";
 import { cn } from "@/lib/utils";
 import { CodeBlock } from "./CodeBlock";
 
-function renderInlineMarkdown(text: string): ReactNode[] {
-  return text.split("\n").map((line, i, arr) => {
-    const parts = line
-      .split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g)
-      .map((part, j) => {
-        if (/^\*\*[^*]+\*\*$/.test(part))
-          return <strong key={j}>{part.slice(2, -2)}</strong>;
-        if (/^\*[^*]+\*$/.test(part))
-          return <em key={j}>{part.slice(1, -1)}</em>;
-        if (/^`[^`]+`$/.test(part))
-          return (
-            <code
-              key={j}
-              className="bg-black/10 dark:bg-white/10 rounded px-1 font-mono text-xs"
-            >
-              {part.slice(1, -1)}
-            </code>
-          );
-        return part;
-      });
+// Renders inline formatting: **bold**, *italic*, `code`
+function renderInlineSpans(text: string): ReactNode[] {
+  return text
+    .split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g)
+    .map((part, j) => {
+      if (/^\*\*[^*]+\*\*$/.test(part))
+        return <strong key={j}>{part.slice(2, -2)}</strong>;
+      if (/^\*[^*]+\*$/.test(part))
+        return <em key={j}>{part.slice(1, -1)}</em>;
+      if (/^`[^`]+`$/.test(part))
+        return (
+          <code
+            key={j}
+            className="bg-black/10 dark:bg-white/10 rounded px-1 font-mono text-xs"
+          >
+            {part.slice(1, -1)}
+          </code>
+        );
+      return part;
+    });
+}
+
+// Renders a single prose line with correct block element
+function renderProseLine(line: string, key: number): ReactNode {
+  // Headings
+  const h1 = line.match(/^# (.+)/);
+  const h2 = line.match(/^## (.+)/);
+  const h3 = line.match(/^### (.+)/);
+  if (h1) return <h1 key={key} className="text-xl font-bold mt-5 mb-2 text-foreground">{renderInlineSpans(h1[1])}</h1>;
+  if (h2) return <h2 key={key} className="text-base font-bold mt-4 mb-1.5 text-foreground">{renderInlineSpans(h2[1])}</h2>;
+  if (h3) return <h3 key={key} className="text-sm font-bold mt-4 mb-1 text-foreground">{renderInlineSpans(h3[1])}</h3>;
+
+  // Bullet list items (supports indentation)
+  const bullet = line.match(/^(\s*)[-*]\s+(.+)/);
+  if (bullet) {
+    const indent = Math.floor(bullet[1].length / 2);
     return (
-      <span key={i}>
-        {parts}
-        {i < arr.length - 1 && <br />}
-      </span>
+      <div key={key} className="flex gap-2 my-0.5" style={{ paddingLeft: `${indent * 16}px` }}>
+        <span className="text-foreground/50 select-none mt-px">•</span>
+        <span className="break-words">{renderInlineSpans(bullet[2])}</span>
+      </div>
     );
-  });
+  }
+
+  // Numbered list items
+  const numbered = line.match(/^(\s*)(\d+)\.\s+(.+)/);
+  if (numbered) {
+    const indent = Math.floor(numbered[1].length / 2);
+    return (
+      <div key={key} className="flex gap-2 my-0.5" style={{ paddingLeft: `${indent * 16}px` }}>
+        <span className="text-foreground/50 select-none min-w-[1.25rem] text-right font-mono text-xs mt-px">{numbered[2]}.</span>
+        <span className="break-words">{renderInlineSpans(numbered[3])}</span>
+      </div>
+    );
+  }
+
+  // Blank line
+  if (line.trim() === "") return <div key={key} className="h-2" />;
+
+  // Regular paragraph text
+  return <p key={key} className="my-0.5 break-words">{renderInlineSpans(line)}</p>;
+}
+
+// Renders a prose segment (splits into lines and classifies each)
+function renderProseSegment(text: string, segKey: number): ReactNode {
+  const lines = text.split("\n");
+  return (
+    <div key={`prose-${segKey}`}>
+      {lines.map((line, i) => renderProseLine(line, i))}
+    </div>
+  );
 }
 
 // Splits on ``` so incomplete (streaming) code blocks render immediately.
@@ -44,17 +88,7 @@ function renderMarkdown(content: string, isStreaming = false): ReactNode[] {
     const isCodeSegment = i % 2 === 1;
 
     if (!isCodeSegment) {
-      // Regular prose
-      if (segment) {
-        elements.push(
-          <span
-            key={`text-${i}`}
-            className="whitespace-pre-wrap break-words"
-          >
-            {renderInlineMarkdown(segment)}
-          </span>,
-        );
-      }
+      if (segment) elements.push(renderProseSegment(segment, i));
     } else {
       // Code block — extract language from first line
       const newlineIdx = segment.indexOf("\n");
@@ -67,10 +101,9 @@ function renderMarkdown(content: string, isStreaming = false): ReactNode[] {
         code = segment.slice(newlineIdx + 1);
       }
 
-      // Strip trailing newline
       code = code.replace(/\n$/, "");
 
-      // Is this the last segment while still streaming? → incomplete block
+      // Last odd segment while streaming = incomplete block
       const isIncomplete = isStreaming && i === segments.length - 1;
 
       elements.push(
@@ -86,6 +119,7 @@ function renderMarkdown(content: string, isStreaming = false): ReactNode[] {
 
   return elements;
 }
+
 
 interface MessageBubbleProps {
   message: Message;

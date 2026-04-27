@@ -9,8 +9,8 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth, authHeaders } from "@/context/AuthContext";
 import { useThrottledCallback } from "@/lib/utils";
 
-const BACKEND_URL = "https://api.1forge.in";
-// const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+// const BACKEND_URL = "https://api.1forge.in"; // production
 
 export function ChatContainer() {
   const { user, isLoading } = useAuth();

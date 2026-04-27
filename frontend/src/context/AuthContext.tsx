@@ -17,9 +17,9 @@ import {
   authHeaders,
 } from "@/lib/auth";
 
-// todos --> add this to config or .env
-const BACKEND_URL = "https://api.1forge.in";
-// const BACKEND_URL = "http://localhost:3000";
+// Use NEXT_PUBLIC_BACKEND_URL env var, fallback to local dev backend
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+// const BACKEND_URL = "https://api.1forge.in"; // production
 
 interface AuthContextValue {
   user: StoredUser | null;

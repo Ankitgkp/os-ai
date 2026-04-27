@@ -34,45 +34,55 @@ function renderInlineMarkdown(text: string): ReactNode[] {
   });
 }
 
-function renderMarkdown(content: string): ReactNode[] {
-  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+// Splits on ``` so incomplete (streaming) code blocks render immediately.
+// Even indices = prose, odd indices = code block content (may be incomplete).
+function renderMarkdown(content: string, isStreaming = false): ReactNode[] {
+  const segments = content.split("```");
   const elements: ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
 
-  while ((match = codeBlockRegex.exec(content)) !== null) {
-    const textBefore = content.slice(lastIndex, match.index);
-    if (textBefore) {
+  segments.forEach((segment, i) => {
+    const isCodeSegment = i % 2 === 1;
+
+    if (!isCodeSegment) {
+      // Regular prose
+      if (segment) {
+        elements.push(
+          <span
+            key={`text-${i}`}
+            className="whitespace-pre-wrap break-words"
+          >
+            {renderInlineMarkdown(segment)}
+          </span>,
+        );
+      }
+    } else {
+      // Code block — extract language from first line
+      const newlineIdx = segment.indexOf("\n");
+      let language = "text";
+      let code = segment;
+
+      if (newlineIdx !== -1) {
+        const firstLine = segment.slice(0, newlineIdx).trim();
+        language = firstLine || "text";
+        code = segment.slice(newlineIdx + 1);
+      }
+
+      // Strip trailing newline
+      code = code.replace(/\n$/, "");
+
+      // Is this the last segment while still streaming? → incomplete block
+      const isIncomplete = isStreaming && i === segments.length - 1;
+
       elements.push(
-        <span
-          key={`text-${lastIndex}`}
-          className="whitespace-pre-wrap break-words"
-        >
-          {renderInlineMarkdown(textBefore)}
-        </span>,
+        <CodeBlock
+          key={`code-${i}`}
+          code={code}
+          language={language}
+          isStreaming={isIncomplete}
+        />,
       );
     }
-
-    const language = match[1] || "text";
-    const code = match[2].replace(/\n$/, "");
-    elements.push(
-      <CodeBlock key={`code-${match.index}`} code={code} language={language} />,
-    );
-
-    lastIndex = match.index + match[0].length;
-  }
-
-  const remaining = content.slice(lastIndex);
-  if (remaining) {
-    elements.push(
-      <span
-        key={`text-${lastIndex}`}
-        className="whitespace-pre-wrap break-words"
-      >
-        {renderInlineMarkdown(remaining)}
-      </span>,
-    );
-  }
+  });
 
   return elements;
 }
@@ -97,7 +107,9 @@ export function MessageBubble({ message, isStreaming }: MessageBubbleProps) {
             : "max-w-[75%]",
         )}
       >
-        <div className="wrap-break-word">{renderMarkdown(message.content)}</div>
+        <div className="wrap-break-word">
+          {renderMarkdown(message.content, isStreaming)}
+        </div>
         {isStreaming && (
           <span className="ml-1 inline-block h-4 w-0.5 animate-pulse bg-current align-middle" />
         )}
@@ -105,3 +117,4 @@ export function MessageBubble({ message, isStreaming }: MessageBubbleProps) {
     </div>
   );
 }
+

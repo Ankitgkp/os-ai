@@ -67,9 +67,10 @@ const tealTheme: { [key: string]: CSSProperties } = {
 interface CodeBlockProps {
   code: string;
   language?: string;
+  isStreaming?: boolean;
 }
 
-export function CodeBlock({ code, language = "text" }: CodeBlockProps) {
+export function CodeBlock({ code, language = "text", isStreaming = false }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -81,7 +82,15 @@ export function CodeBlock({ code, language = "text" }: CodeBlockProps) {
   return (
     <div className="code-block-wrapper group relative my-3 rounded-xl overflow-hidden border border-[oklch(0.25_0.015_180)] bg-[oklch(0.16_0.01_180)]">
       <div className="flex items-center justify-between px-4 py-2 text-xs bg-[oklch(0.13_0.012_180)] text-[#7a9e96] border-b border-[oklch(0.22_0.012_180)]">
-        <span className="font-mono opacity-70">{language}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-mono opacity-70">{language}</span>
+          {isStreaming && (
+            <span className="flex items-center gap-1 text-[#6ec5b8] opacity-80">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#6ec5b8] animate-pulse" />
+              <span className="text-[10px]">streaming</span>
+            </span>
+          )}
+        </div>
         <button
           onClick={handleCopy}
           className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-[#7a9e96] transition-all duration-200 hover:bg-white/10 hover:text-[#6ec5b8]"

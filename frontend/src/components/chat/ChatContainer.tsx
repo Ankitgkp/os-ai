@@ -258,7 +258,7 @@ export function ChatContainer() {
   const throttledSendMessage = useThrottledCallback(sendMessage, 500);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-background text-foreground">
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
 
       <Sidebar
@@ -272,7 +272,7 @@ export function ChatContainer() {
         onSignInClick={() => setAuthModalOpen(true)}
       />
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden bg-gradient-to-b from-background via-background to-muted/30">
         <MessageList
           messages={messages}
           isStreaming={isStreaming}

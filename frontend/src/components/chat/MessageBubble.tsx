@@ -137,8 +137,8 @@ export function MessageBubble({ message, isStreaming }: MessageBubbleProps) {
         className={cn(
           "text-sm leading-relaxed",
           isUser
-            ? "max-w-[75%] rounded-3xl bg-muted dark:bg-white/10 text-foreground px-4 py-2.5"
-            : "max-w-[75%]",
+            ? "max-w-[75%] rounded-3xl bg-muted dark:bg-white/10 text-foreground px-4 py-2.5 shadow-sm ring-1 ring-border/40"
+            : "max-w-[75%] rounded-2xl bg-card/60 px-4 py-3 text-foreground shadow-sm ring-1 ring-border/30 backdrop-blur-sm",
         )}
       >
         <div className="wrap-break-word">
@@ -151,4 +151,3 @@ export function MessageBubble({ message, isStreaming }: MessageBubbleProps) {
     </div>
   );
 }
-

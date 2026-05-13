@@ -37,13 +37,18 @@ export function MessageList({
 
   if (messages.length === 0) {
     return (
-      <div className="relative flex flex-1 flex-col items-center justify-center text-center px-6">
+      <div className="relative flex flex-1 flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-background via-background to-muted/30">
         <div className="absolute top-4 right-5">
           <UnlimitedBadge />
         </div>
-        <h2 className="text-2xl font-semibold tracking-tight">
-          Hello! How can I help you today?
-        </h2>
+        <div className="max-w-md rounded-3xl border border-border/50 bg-card/60 px-8 py-6 shadow-sm backdrop-blur-sm">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Hello! How can I help you today?
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Ask a question or drop in code to get started.
+          </p>
+        </div>
       </div>
     );
   }
@@ -52,9 +57,9 @@ export function MessageList({
     <div
       ref={scrollContainerRef}
       onScroll={handleScroll}
-      className="flex-1 overflow-y-auto"
+      className="flex-1 overflow-y-auto bg-gradient-to-b from-background via-background to-muted/30"
     >
-      <div className="mx-auto max-w-3xl pt-6">
+      <div className="mx-auto max-w-3xl px-2 pt-6 pb-10">
         {messages.map((message) => (
           <MessageBubble
             key={message.id}

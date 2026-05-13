@@ -33,9 +33,9 @@ export function ChatInput({ value, onChange, onSubmit, onStop, isStreaming, disa
   }
 
   return (
-    <div className="px-4 pb-6 pt-4">
+    <div className="px-4 pb-6 pt-4 border-t border-border/40 bg-background/80 backdrop-blur-sm">
       <div className="mx-auto max-w-3xl">
-        <div className="relative flex items-end gap-2 rounded-2xl border border-border px-4 py-3 focus-within:border-ring focus-within:ring-1 focus-within:ring-ring transition-all">
+        <div className="relative flex items-end gap-2 rounded-2xl border border-border/70 bg-card/60 px-4 py-3 shadow-sm focus-within:border-ring focus-within:ring-1 focus-within:ring-ring focus-within:shadow-md transition-all">
           <Textarea
             ref={textareaRef}
             value={value}
@@ -54,7 +54,7 @@ export function ChatInput({ value, onChange, onSubmit, onStop, isStreaming, disa
             size="icon"
             onClick={isStreaming ? onStop : onSubmit}
             disabled={!isStreaming && (!value.trim() || disabled)}
-            className="mb-0.5 size-8 shrink-0 rounded-full"
+            className="mb-0.5 size-8 shrink-0 rounded-full shadow-sm transition-shadow hover:shadow-md"
           >
             {isStreaming ? <Square size={14} fill="currentColor" /> : <ArrowUp size={16} />}
           </Button>

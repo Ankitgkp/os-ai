@@ -83,7 +83,7 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        "relative flex h-full shrink-0 flex-col border-r border-border bg-muted/30 dark:bg-sidebar backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out",
+        "relative flex h-full shrink-0 flex-col border-r border-border bg-gradient-to-b from-muted/40 via-muted/30 to-muted/20 dark:from-sidebar/80 dark:via-sidebar/70 dark:to-sidebar/60 backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out",
         isOpen ? "w-64" : "w-14",
       )}
     >
@@ -161,7 +161,7 @@ export function Sidebar({
         <div className="px-3 pb-2">
           <button
             onClick={onNewChat}
-            className="w-full rounded-xl bg-primary/15 hover:bg-primary/25 border border-primary/20 text-primary transition-all py-2.5 font-semibold text-sm flex items-center justify-center whitespace-nowrap"
+            className="w-full rounded-xl bg-primary/15 hover:bg-primary/25 border border-primary/20 text-primary transition-all py-2.5 font-semibold text-sm flex items-center justify-center whitespace-nowrap shadow-sm hover:shadow-md"
           >
             New Chat
           </button>
@@ -178,7 +178,7 @@ export function Sidebar({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search your threads..."
-              className="w-full rounded-lg bg-accent/50 border border-border/50 py-1.5 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-all"
+              className="w-full rounded-lg bg-accent/60 border border-border/50 py-1.5 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground/50 shadow-sm focus:outline-none focus:ring-1 focus:ring-ring focus:shadow-md transition-all"
             />
           </div>
         </div>
@@ -206,10 +206,10 @@ export function Sidebar({
                   <div
                     key={session.id}
                     className={cn(
-                      "group flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors",
+                      "group flex items-center gap-2 rounded-lg px-3 py-2 text-sm cursor-pointer transition-all",
                       session.id === activeSessionId
                         ? "bg-accent text-accent-foreground"
-                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground hover:shadow-sm",
                     )}
                     onClick={() => onSelectSession(session.id)}
                   >
